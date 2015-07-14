@@ -5,5 +5,5 @@ See [What is OPC](https://opcfoundation.org/about/what-is-opc/)
 
 ## Building
 
-** Note: ** We have a *dependency* folder with a package of libraries and script to install on your local maven repository. However, this since has been replace by remote repository. Still, I'm concern about the evolution, or lack of it, of the open-scada and its ancillary projects - e.g. Utgard
+**Note:** We have a *dependency* folder with a package of libraries and script to install on your local maven repository. However, this since has been replace by remote repository. Still, I'm concern about the evolution, or lack of it, of the open-scada and its ancillary projects - e.g. Utgard
 
