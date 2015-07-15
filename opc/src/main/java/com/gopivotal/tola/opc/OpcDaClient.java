@@ -235,7 +235,7 @@ public class OpcDaClient implements IOpcDaClient {
 //		opc.host = "192.168.9.157";
 //		opc.domain = "CORP";
 //		opc.user = "borgem";
-//		opc.password = "MetalSurf74!";
+//		opc.password = "PASSWORD";
 		
 		opc.host = args[0];
 		opc.domain = args[1];
@@ -290,7 +290,7 @@ public class OpcDaClient implements IOpcDaClient {
 		ci.setHost("192.168.9.164");
 		ci.setDomain("CORP");
 		ci.setUser("borgem");
-		ci.setPassword("MetalSurf74!");
+		ci.setPassword("PASSWORD");
 		ci.setProgId("Matrikon.OPC.Simulation.1");
 		// ci.setClsid("680DFBF7-C92D-484D-84BE-06DC3DECCD68"); // if ProgId is
 		// not working, try it using the Clsid instead
