@@ -6,7 +6,7 @@ import org.crsh.command.InvocationContext
 import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.BeanFactory;
 
-import com.gopivotal.tola.console.OpcFactoryBean;
+import com.gopivotal.tola.opc.boot.OpcFactoryBean;
 import com.gopivotal.tola.opc.ConnectionConfigurationImpl;
 
 @Usage("OPC commands")
@@ -14,7 +14,7 @@ class opc {
 
 	def OpcFactoryBean getOpcFactoryBean(InvocationContext context) {
 		BeanFactory beanFactory = (BeanFactory) context.getAttributes().get("spring.beanfactory");
-		OpcFactoryBean opcFactory = beanFactory.getBean(com.gopivotal.tola.console.OpcFactoryBean.class)
+		OpcFactoryBean opcFactory = beanFactory.getBean(com.gopivotal.tola.opc.boot.OpcFactoryBean.class)
 		return opcFactory
 	}
 		
@@ -77,6 +77,7 @@ class opc {
 
 	/**
 	 * DUMP TAGS
+	 * 
 	 * @param context
 	 * @param name
 	 * @param branch
@@ -91,6 +92,14 @@ class opc {
 		return "See log for OPC tags"
 	}
 	
+	/**
+	 * ADD TAG
+	 * 
+	 * @param context
+	 * @param name
+	 * @param tag
+	 * @return
+	 */
 	@Usage("Add tag to listen")
 	@Command
 	def atag(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name, @Required @Usage("tag name") @Argument String tag) {
@@ -100,6 +109,14 @@ class opc {
 		return "tag ${tag} added to connection ${name}"
 	}
 
+	/**
+	 * REMOVE TAG
+	 * 
+	 * @param context
+	 * @param name
+	 * @param tag
+	 * @return
+	 */
 	@Usage("Remove tag to listen")
 	@Command
 	def rtag(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name, @Required @Usage("tag name") @Argument String tag) {
@@ -109,6 +126,13 @@ class opc {
 		return "tag ${tag} removec to connection ${name}"
 	}
 	
+	/**
+	 * LISTEN
+	 * 
+	 * @param context
+	 * @param name
+	 * @return
+	 */
 	@Usage("Listen tag updates from OPC Server")
 	@Command
 	def listen(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name) {
@@ -118,6 +142,13 @@ class opc {
 		return "Connection ${name} is listening"
 	}
 
+	/**
+	 * QUIESCE
+	 * 
+	 * @param context
+	 * @param name
+	 * @return
+	 */
 	@Usage("Quiesce OPC Server")
 	@Command
 	def quiesce(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name) {

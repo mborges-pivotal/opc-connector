@@ -5,7 +5,7 @@
  * one or more patents listed at http://www.gopivotal.com/patents.
  *=========================================================================
  */
-package com.gopivotal.tola.console;
+package com.gopivotal.tola.opc.boot;
 
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.gopivotal.tola.opc.ConnectionConfiguration;
+import com.gopivotal.tola.opc.IConnectionConfiguration;
 import com.gopivotal.tola.opc.OpcDaClient;
 
 
@@ -26,7 +26,7 @@ import com.gopivotal.tola.opc.OpcDaClient;
 public class OpcFactoryBean {
 	
 	Logger logger = LoggerFactory
-			.getLogger("com.gopivotal.tola.opc.OpcFactoryBean");
+			.getLogger("com.gopivotal.tola.opc.boot.OpcFactoryBean");
 	
 	private Map<String, OpcDaClient> connections = new HashMap<String, OpcDaClient>();
 	
@@ -36,7 +36,7 @@ public class OpcFactoryBean {
 	}
 
 	// CREATE CONNECTION
-	public void createConnection(String name, ConnectionConfiguration connConfig) {
+	public void createConnection(String name, IConnectionConfiguration connConfig) {
 		OpcDaClient opc = new OpcDaClient();
 		opc.setConnConfig(connConfig);
 		opc.dcb = new DataCallbackImpl(name);

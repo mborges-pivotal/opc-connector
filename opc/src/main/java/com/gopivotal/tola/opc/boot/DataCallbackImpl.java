@@ -5,7 +5,7 @@
  * one or more patents listed at http://www.gopivotal.com/patents.
  *=========================================================================
  */
-package com.gopivotal.tola.console;
+package com.gopivotal.tola.opc.boot;
 
 import org.openscada.opc.lib.da.DataCallback;
 import org.openscada.opc.lib.da.Item;
@@ -13,13 +13,13 @@ import org.openscada.opc.lib.da.ItemState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gopivotal.tola.opc.Quality;
-import com.gopivotal.tola.opc.Timestamp;
+import com.gopivotal.tola.opc.type.Quality;
+import com.gopivotal.tola.opc.type.Timestamp;
 
 public class DataCallbackImpl implements DataCallback {
 
 	Logger logger = LoggerFactory
-			.getLogger("com.gopivotal.tola.opc.OpcFactoryBean.DataCallbackImpl");
+			.getLogger("com.gopivotal.tola.opc.boot.OpcFactoryBean.DataCallbackImpl");
 	
 	private String name;
 	

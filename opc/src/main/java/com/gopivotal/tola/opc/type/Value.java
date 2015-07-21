@@ -5,7 +5,7 @@
  * one or more patents listed at http://www.gopivotal.com/patents.
  *=========================================================================
  */
-package com.gopivotal.tola.opc;
+package com.gopivotal.tola.opc.type;
 
 import org.jinterop.dcom.common.JIException;
 import org.jinterop.dcom.core.JIString;

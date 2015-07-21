@@ -5,7 +5,7 @@
  * one or more patents listed at http://www.gopivotal.com/patents.
  *=========================================================================
  */
-package com.gopivotal.tola.opc;
+package com.gopivotal.tola.opc.type;
 
 /**
  * Quality - Represents an Item Quality

@@ -7,10 +7,10 @@
  */
 package com.gopivotal.tola.opc;
 
-public class MatrikonSimulationServerConfiguration implements ServerConfiguration
+public class MatrikonSimulationServerConfiguration implements IServerConfiguration
 {
 	
-	public static final ServerConfiguration INSTANCE = new MatrikonSimulationServerConfiguration();
+	public static final IServerConfiguration INSTANCE = new MatrikonSimulationServerConfiguration();
 	
 	// SINGLETON
 	private MatrikonSimulationServerConfiguration() {	

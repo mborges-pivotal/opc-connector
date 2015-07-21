@@ -9,7 +9,7 @@ package com.gopivotal.tola.opc;
 
 import java.util.Arrays;
 
-public class ConnectionConfigurationImpl implements ConnectionConfiguration {
+public class ConnectionConfigurationImpl implements IConnectionConfiguration {
 
 	private String[] args;
 	

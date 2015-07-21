@@ -7,7 +7,7 @@
  */
 package com.gopivotal.tola.opc;
 
-public interface ConnectionConfiguration extends ServerConfiguration
+public interface IConnectionConfiguration extends IServerConfiguration
 {
     public String getHost();
     public String getDomain();

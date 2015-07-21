@@ -1,5 +1,7 @@
 package com.gopivotal.tola.opc;
 
+import com.gopivotal.tola.opc.type.Quality;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

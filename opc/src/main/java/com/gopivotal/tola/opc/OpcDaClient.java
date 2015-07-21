@@ -23,6 +23,9 @@ import org.openscada.opc.lib.da.browser.Leaf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gopivotal.tola.opc.type.Quality;
+import com.gopivotal.tola.opc.type.Timestamp;
+
 public class OpcDaClient {
 
 	Logger logger = LoggerFactory
@@ -34,7 +37,7 @@ public class OpcDaClient {
 
 	private boolean async;
 
-	private ConnectionConfiguration connConfig;
+	private IConnectionConfiguration connConfig;
 
 	public String[] tags;
 	
@@ -60,11 +63,11 @@ public class OpcDaClient {
 		this.async = async;
 	}
 
-	public void setConnConfig(ConnectionConfiguration connConfig) {
+	public void setConnConfig(IConnectionConfiguration connConfig) {
 		this.connConfig = connConfig;
 	}
 
-	public ConnectionConfiguration getConnConfig() {
+	public IConnectionConfiguration getConnConfig() {
 		return connConfig;
 	}
 

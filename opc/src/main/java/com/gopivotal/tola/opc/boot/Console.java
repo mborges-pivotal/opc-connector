@@ -1,4 +1,4 @@
-package com.gopivotal.tola.console;
+package com.gopivotal.tola.opc.boot;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.*;
