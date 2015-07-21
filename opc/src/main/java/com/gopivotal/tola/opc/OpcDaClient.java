@@ -23,9 +23,7 @@ import org.openscada.opc.lib.da.browser.Leaf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gopivotal.tola.opc.util.VariantDumper;
-
-public class OpcDaClient implements IOpcDaClient {
+public class OpcDaClient {
 
 	Logger logger = LoggerFactory
 			.getLogger("com.gopivotal.tola.opc.xd.OpcDaClient");
@@ -34,81 +32,199 @@ public class OpcDaClient implements IOpcDaClient {
 	private int PERIOD_ASYNC = 100;
 	private boolean INITIAL_REFRESH = false;
 
-	public String host;
-	public String domain;
-	public String user;
-	public String password;
-	public String progId;
-	
 	private boolean async;
 
-	private ServerConfiguration serverConfiguration = MatrikonSimulationServerConfiguration.INSTANCE;
-	
+	private ConnectionConfiguration connConfig;
+
 	public String[] tags;
+	
+	public DataCallback dcb;
 
 	private ScheduledExecutorService scheduler = Executors
 			.newSingleThreadScheduledExecutor();
 
 	private Server server;
 	private AccessBase access;
-	private DataCallback dcb;
 
 	private volatile boolean connected = false;
 
+	// ///////////////////////////////////////////
+	// Accessor methods
+	// ///////////////////////////////////////////
+
+	public boolean isAsync() {
+		return async;
+	}
+
+	public void setAsync(boolean async) {
+		this.async = async;
+	}
+
+	public void setConnConfig(ConnectionConfiguration connConfig) {
+		this.connConfig = connConfig;
+	}
+
+	public ConnectionConfiguration getConnConfig() {
+		return connConfig;
+	}
+
 	// CONNECT
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#connect()
 	 */
 	public void connect() throws IllegalArgumentException,
 			UnknownHostException, AlreadyConnectedException {
 		ConnectionInformation ci = new ConnectionInformation();
 
-		ci.setHost(host);
-		ci.setDomain(domain);
-		ci.setUser(user);
-		ci.setPassword(password);
+		ci.setHost(connConfig.getHost());
+		ci.setDomain(connConfig.getDomain());
+		ci.setUser(connConfig.getUser());
+		ci.setPassword(connConfig.getPassword());
+		ci.setProgId(connConfig.getProgId());
 
-		// MMB: Hack - fix it
-		if (progId != null) {
-			ci.setProgId(progId);
-		} else {
-			ci.setProgId(serverConfiguration.getProgId());
-		}
-		
 		server = new Server(ci, scheduler);
 
 		logger.info("Connecting...");
 		try {
 			server.connect();
+			createAccessBase();
 		} catch (JIException e) {
 			// TODO: handle error
 			// C000006D: Unknown error (C000006D) - invalid user/password?
 			System.out.println(String.format("%08X: %s", e.getErrorCode(),
 					server.getErrorMessage(e.getErrorCode())));
+		} catch (NotConnectedException e) {
+			e.printStackTrace();
+		} catch (DuplicateGroupException e) {
+			e.printStackTrace();
+		} catch (AddFailedException e) {
+			e.printStackTrace();
 		}
 		logger.info("Connected.");
 
 		connected = true;
 	}
 
+	public void addItem(String tag) throws JIException,
+			AddFailedException {
+		if (connected) {
+			access.addItem(tag, dcb);
+		}
+	}
+
+	public void removeItem(String tag) throws JIException,
+			AddFailedException {
+		if (connected) {
+			access.removeItem(tag);
+		}
+	}
+	
+	public void start() {
+		if (connected) {
+			access.bind();
+		}
+	}
+
+	public void stop() {
+		if (connected) {
+			try {
+				access.unbind();
+			} catch (JIException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// DISCONNECT
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#disconnect()
+	 */
+	public void disconnect() {
+		if (connected) {
+
+			logger.info("server state start time {}", server.getServerState().getStartTime());
+			logger.info("server state group count {}", server.getServerState().getGroupCount());
+			if (access != null) {
+				try {
+					access.unbind();
+				} catch (JIException e) {
+					e.printStackTrace();
+				}
+			}
+
+			server.dispose();
+			
+			// give enough time to cleanup
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		connected = false;
+		logger.info("Disconnected");
+	}
+
+	public void dumpRootTree() {
+
+		if (!connected) {
+			logger.info("not connected");
+			return;
+		}
+
+		try {
+			dumpTree(server.getTreeBrowser().browse(), 0);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (JIException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	// ////////////////////////////////////////////////
+	// helper methods
+	// /////////////////////////////////////////////////
+
+	private void createAccessBase() throws IllegalArgumentException,
+			UnknownHostException, NotConnectedException, JIException,
+			DuplicateGroupException, AddFailedException {
+		if (async) {
+			asyncRead();
+		} else {
+			syncRead();
+		}
+	}
+
 	// SYNC READ
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#syncRead()
 	 */
-	public void syncRead() throws IllegalArgumentException,
+	private void syncRead() throws IllegalArgumentException,
 			UnknownHostException, NotConnectedException, JIException,
 			DuplicateGroupException, AddFailedException {
 		access = new SyncAccess(server, PERIOD_SYNC);
 
-		addItems(dcb);
+		// addItems(dcb);
 
 		// start reading
-		access.bind();
+		// access.bind();
 
 	}
 
 	// ASYNC READ
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#asyncRead()
 	 */
 	public void asyncRead() throws JIException, AddFailedException,
@@ -116,49 +232,12 @@ public class OpcDaClient implements IOpcDaClient {
 			NotConnectedException, DuplicateGroupException {
 		access = new Async20Access(server, PERIOD_ASYNC, INITIAL_REFRESH);
 
-		addItems(dcb);
-
-		// start reading
-		access.bind();
-
 	}
-
-	// Add Tags - Items
-	private void addItems(DataCallback dataCallback) throws JIException, AddFailedException {
-		
-		for(String tag: tags) {
-			access.addItem(tag, dataCallback);
-		}
-	}
-
-	// DISCONNECT
-	/* (non-Javadoc)
-	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#disconnect()
-	 */
-	public void disconnect() {
-		if (connected) {
-
-			try {
-				access.unbind();
-			} catch (JIException e) {
-				e.printStackTrace();
-			}
-
-			server.disconnect();
-			server.dispose();
-		}
-		connected = false;
-		logger.info("Disconnected");
-	}
-
-	// ////////////////////////////////////////////////
-	// helper methods
-	// /////////////////////////////////////////////////
 
 	public static String dumpItemState(final Item item, final ItemState state) {
-		return String.format(
-				"Item: %s, Value: %s, Timestamp: %s, Quality: %s",
-				item.getId(), state.getValue(), Timestamp.format(state.getTimestamp()),
+		return String.format("Item: %s, Value: %s, Timestamp: %s, Quality: %s",
+				item.getId(), state.getValue(),
+				Timestamp.format(state.getTimestamp()),
 				Quality.format(state.getQuality()));
 	}
 
@@ -191,162 +270,94 @@ public class OpcDaClient implements IOpcDaClient {
 			 */
 		}
 	}
-	
-	// Accessor methods
-		
-	/* (non-Javadoc)
-	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#isAsync()
-	 */
-	public boolean isAsync() {
-		return async;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#setAsync(boolean)
-	 */
-	public void setAsync(boolean async) {
-		this.async = async;
-	}	
-	
-	/* (non-Javadoc)
-	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#setDataCallback(org.openscada.opc.lib.da.DataCallback)
-	 */
-	public void setDataCallback(DataCallback dcb) {
-		this.dcb = dcb;
-	}
 
 	// ////////////////////////////////////////////////
 	// Main
 	// /////////////////////////////////////////////////
 
 	public static void main(final String[] args) throws Exception {
-		
+
 		if (args.length < 6) {
-			System.out.println("Syntax: OpcDaClient host domain user password [CLSID|ProgId] tagList [async]");
-			System.out.println(" Where: you can pass either CLSID or ProgID and");
+			System.out
+					.println("Syntax: OpcDaClient host domain user password [CLSID|ProgId] tagList [async]");
+			System.out
+					.println(" Where: you can pass either CLSID or ProgID and");
 			System.out.println("        tagList is an comma delimited string");
-			System.out.println("        async communication, defaults to async");
+			System.out
+					.println("        async communication, defaults to async");
 			System.exit(0);
 		}
-		
+
 		System.out.println("Args: " + Arrays.toString(args));
-		
+
 		OpcDaClient opc = new OpcDaClient();
-//		opc.host = "192.168.9.157";
-//		opc.domain = "CORP";
-//		opc.user = "borgem";
-//		opc.password = "PASSWORD";
-		
-		opc.host = args[0];
-		opc.domain = args[1];
-		opc.user = args[2];
-		opc.password = args[3];
-		//opc.serverConfiguration = MatrikonSimulationServerConfiguration.INSTANCE;
-		// 
-		
-		final ServerConfiguration srvConf = new ServerConfiguration() {
-			public String getCLSID() {
-				return args[4];
-			}
-			public String getProgId() {
-				// Matrikon.OPC.OPCSniffer
-				// Matrikon.OPC.Simulation.1
-				return args[5];
-			}		
-		};
-		
-		opc.serverConfiguration = srvConf;
-		
+
+		opc.connConfig = new ConnectionConfigurationImpl(args);
+
 		if (args.length > 7) {
 			opc.async = true;
 		}
-				
-		//opc.tags = new String[] { ".Temperature","testGroup.t2"};
-		opc.tags = args[6].split(",");
-		
+
+		// opc.tags = new String[] { ".Temperature","testGroup.t2"};
 		opc.dcb = new DataCallbackImpl();
-		
+
 		opc.connect();
-		
-		//OpcDaClient.dumpTree(opc.server.getTreeBrowser().browse(), 0);
-		
-		if (opc.async) {
-			opc.asyncRead();			
-		} else {
-			opc.syncRead();			
+
+		opc.tags = args[6].split(",");
+		for (String tag : opc.tags) {
+			opc.addItem(tag);
 		}
-		
+		opc.start();
+
+		// OpcDaClient.dumpTree(opc.server.getTreeBrowser().browse(), 0);
+
 		Thread.sleep(10 * 1000);
 
 		opc.disconnect();
-		
+
 	}
 
 	/*
-	public static void main2(String[] args) throws Exception {
-
-		// create connection information
-		final ConnectionInformation ci = new ConnectionInformation();
-		ci.setHost("192.168.9.164");
-		ci.setDomain("CORP");
-		ci.setUser("borgem");
-		ci.setPassword("PASSWORD");
-		ci.setProgId("Matrikon.OPC.Simulation.1");
-		// ci.setClsid("680DFBF7-C92D-484D-84BE-06DC3DECCD68"); // if ProgId is
-		// not working, try it using the Clsid instead
-		// final String itemId = "_System._Time_Second";
-		// final String itemId = ".Temperature";
-		final String itemId = "testGroup.t2";
-		// create a new server
-		final Server server = new Server(ci,
-				Executors.newSingleThreadScheduledExecutor());
-
-		// final AutoReconnectController autoReconnectController = new
-		// AutoReconnectController ( server );
-
-		try {
-
-			// connect to server
-			System.out.println("Connecting...");
-			server.connect();
-			System.out.println("Connectied");
-
-			// autoReconnectController.connect();
-
-			// browse
-			dumpTree(server.getTreeBrowser().browse(), 0);
-
-			// add sync access, poll every 500 ms
-			// final AccessBase access = new SyncAccess(server, 500);
-
-			final AccessBase access = new Async20Access(server, 100, false);
-
-			access.addItem(itemId, new DataCallback() {
-				public void changed(Item item, ItemState state) {
-					System.out.println(String.format(
-							"Item: %s, Value: %s, Timestamp: %tc, Quality: %d",
-							item.getId(), state.getValue(),
-							state.getTimestamp(), state.getQuality()));
-
-					// USE LOG DEBUG
-					try {
-						VariantDumper.dumpValue("\t", state.getValue());
-					} catch (final JIException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-
-			// start reading
-			access.bind();
-			// wait a little bit
-			Thread.sleep(10 * 1000);
-			// stop reading
-			access.unbind();
-		} catch (final JIException e) {
-			System.out.println(String.format("%08X: %s", e.getErrorCode(),
-					server.getErrorMessage(e.getErrorCode())));
-		}
-	}
-*/
+	 * public static void main2(String[] args) throws Exception {
+	 * 
+	 * // create connection information final ConnectionInformation ci = new
+	 * ConnectionInformation(); ci.setHost("192.168.9.164");
+	 * ci.setDomain("CORP"); ci.setUser("borgem"); ci.setPassword("PASSWORD");
+	 * ci.setProgId("Matrikon.OPC.Simulation.1"); //
+	 * ci.setClsid("680DFBF7-C92D-484D-84BE-06DC3DECCD68"); // if ProgId is //
+	 * not working, try it using the Clsid instead // final String itemId =
+	 * "_System._Time_Second"; // final String itemId = ".Temperature"; final
+	 * String itemId = "testGroup.t2"; // create a new server final Server
+	 * server = new Server(ci, Executors.newSingleThreadScheduledExecutor());
+	 * 
+	 * // final AutoReconnectController autoReconnectController = new //
+	 * AutoReconnectController ( server );
+	 * 
+	 * try {
+	 * 
+	 * // connect to server System.out.println("Connecting...");
+	 * server.connect(); System.out.println("Connectied");
+	 * 
+	 * // autoReconnectController.connect();
+	 * 
+	 * // browse dumpTree(server.getTreeBrowser().browse(), 0);
+	 * 
+	 * // add sync access, poll every 500 ms // final AccessBase access = new
+	 * SyncAccess(server, 500);
+	 * 
+	 * final AccessBase access = new Async20Access(server, 100, false);
+	 * 
+	 * access.addItem(itemId, new DataCallback() { public void changed(Item
+	 * item, ItemState state) { System.out.println(String.format(
+	 * "Item: %s, Value: %s, Timestamp: %tc, Quality: %d", item.getId(),
+	 * state.getValue(), state.getTimestamp(), state.getQuality()));
+	 * 
+	 * // USE LOG DEBUG try { VariantDumper.dumpValue("\t", state.getValue()); }
+	 * catch (final JIException e) { e.printStackTrace(); } } });
+	 * 
+	 * // start reading access.bind(); // wait a little bit Thread.sleep(10 *
+	 * 1000); // stop reading access.unbind(); } catch (final JIException e) {
+	 * System.out.println(String.format("%08X: %s", e.getErrorCode(),
+	 * server.getErrorMessage(e.getErrorCode()))); } }
+	 */
 }

@@ -117,20 +117,6 @@ public class Quality {
 	@Override
 	public String toString() {
 		return "Quality [value=" + value + " Substatus=" + substatus() + " Limit=" + limit() + "]";
-	}
-
-	public static void main(String[] args) {
-		Quality a1 = new Quality((short)192);
-		Quality a2 = new Quality((short)28);
-		Quality a3 = new Quality((short)72);
-		Quality a4 = new Quality((short)159);
-		
-		System.out.println(a1);
-		System.out.println(a2);
-		System.out.println(a3);
-		System.out.println(a4);
-		
-	}
-	
+	}	
 
 }

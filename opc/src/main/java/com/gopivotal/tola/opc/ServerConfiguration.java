@@ -10,7 +10,6 @@ package com.gopivotal.tola.opc;
 public interface ServerConfiguration
 {
     public String getCLSID ();
-
     public String getProgId ();
-
+        
 }

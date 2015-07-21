@@ -7,8 +7,6 @@
  */
 package com.gopivotal.tola.opc;
 
-
-
 public class MatrikonSimulationServerConfiguration implements ServerConfiguration
 {
 	
