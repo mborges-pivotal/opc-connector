@@ -96,8 +96,8 @@ public class OpcDaClient {
 		} catch (JIException e) {
 			// TODO: handle error
 			// C000006D: Unknown error (C000006D) - invalid user/password?
-			System.out.println(String.format("%08X: %s", e.getErrorCode(),
-					server.getErrorMessage(e.getErrorCode())));
+			String error = String.format("%08X: %s", e.getErrorCode(),server.getErrorMessage(e.getErrorCode()));
+			throw new IllegalStateException(error, e);
 		} catch (NotConnectedException e) {
 			e.printStackTrace();
 		} catch (DuplicateGroupException e) {

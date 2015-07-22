@@ -5,11 +5,12 @@
  * one or more patents listed at http://www.gopivotal.com/patents.
  *=========================================================================
  */
-package com.gopivotal.tola.opc;
+package com.gopivotal.tola.opc.servers;
 
 public interface IServerConfiguration
 {
     public String getCLSID ();
     public String getProgId ();
+    public String getVersionedProgId();
         
 }

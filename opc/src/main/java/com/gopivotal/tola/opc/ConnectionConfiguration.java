@@ -117,7 +117,7 @@ public class ConnectionConfiguration {
 	public String toString() {
 		return "[clsId=" + clsId
 				+ ", progId=" + progId + ", host=" + host + ", domain="
-				+ domain + ", user=" + user + ", password=" + password + "]";
+				+ domain + ", user=" + user + ", password=*****" + "]";
 	}
 
 }

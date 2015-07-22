@@ -5,25 +5,38 @@
  * one or more patents listed at http://www.gopivotal.com/patents.
  *=========================================================================
  */
-package com.gopivotal.tola.opc;
+package com.gopivotal.tola.opc.servers;
 
-public class MatrikonSimulationServerConfiguration implements IServerConfiguration
+
+/**
+ * Graybox simulator
+ * 
+ * {@link http://www.gray-box.net}
+ * @author mborges
+ *
+ */
+public class GrayboxServer implements IServerConfiguration
 {
 	
-	public static final IServerConfiguration INSTANCE = new MatrikonSimulationServerConfiguration();
+	public static final IServerConfiguration INSTANCE = new GrayboxServer();
 	
 	// SINGLETON
-	private MatrikonSimulationServerConfiguration() {	
+	private GrayboxServer() {	
 	}
 
     public String getCLSID ()
     {
-        return "F8582CF2-88FB-11D0-B850-00C0F0104305";
+        return "2C2E36B7-FE45-4A29-BF89-9BFBA6A40857";
     }
 
     public String getProgId ()
     {
-        return "Matrikon.OPC.Simulation.1";
+        return "Graybox.Simulator";
+    }
+
+    public String getVersionedProgId ()
+    {
+        return "Graybox.Simulator.1";
     }
 
 
