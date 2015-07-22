@@ -29,7 +29,7 @@ import com.gopivotal.tola.opc.type.Timestamp;
 public class OpcDaClient {
 
 	Logger logger = LoggerFactory
-			.getLogger("com.gopivotal.tola.opc.xd.OpcDaClient");
+			.getLogger("com.gopivotal.tola.opc.OpcDaClient");
 
 	private int PERIOD_SYNC = 500;
 	private int PERIOD_ASYNC = 100;
@@ -37,7 +37,7 @@ public class OpcDaClient {
 
 	private boolean async;
 
-	private IConnectionConfiguration connConfig;
+	private ConnectionConfiguration connConfig;
 
 	public String[] tags;
 	
@@ -63,11 +63,11 @@ public class OpcDaClient {
 		this.async = async;
 	}
 
-	public void setConnConfig(IConnectionConfiguration connConfig) {
+	public void setConnConfig(ConnectionConfiguration connConfig) {
 		this.connConfig = connConfig;
 	}
 
-	public IConnectionConfiguration getConnConfig() {
+	public ConnectionConfiguration getConnConfig() {
 		return connConfig;
 	}
 
@@ -295,7 +295,7 @@ public class OpcDaClient {
 
 		OpcDaClient opc = new OpcDaClient();
 
-		opc.connConfig = new ConnectionConfigurationImpl(args);
+		opc.connConfig = new ConnectionConfiguration(args);
 
 		if (args.length > 7) {
 			opc.async = true;

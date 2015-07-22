@@ -3,11 +3,11 @@ package commands
 import org.crsh.cli.Usage
 import org.crsh.cli.Command
 import org.crsh.command.InvocationContext
-import org.springframework.core.env.Environment;
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.core.env.Environment
+import org.springframework.beans.factory.BeanFactory
 
 import com.gopivotal.tola.opc.boot.OpcFactoryBean;
-import com.gopivotal.tola.opc.ConnectionConfigurationImpl;
+import com.gopivotal.tola.opc.ConnectionConfiguration;
 
 @Usage("OPC commands")
 class opc {
@@ -27,22 +27,19 @@ class opc {
 	 */
 	@Usage("Connect to OPC Server")
 	@Command
-	def connect(InvocationContext context, @Usage("The name of the Connection to create") @Argument String name) {
+	def connect(InvocationContext context, @Usage("The name of the Connection to create") @Required @Argument String name,  
+		@Usage("The name server to use") @Required @Argument String server,
+		@Usage("password to use") @Argument String password) {
 		println "Connection to OPC server..."
 		
-		Environment env = context.attributes["spring.environment"]
-    	String[] args = [env.getProperty("opc.host"), env.getProperty("opc.domain"), env.getProperty("opc.user"), env.getProperty("opc.password"), "", env.getProperty("opc.server")]
-		ConnectionConfigurationImpl connConfig = new ConnectionConfigurationImpl(args);
-
-		println "Using parms: ${args}"
+		//Environment env = context.attributes["spring.environment"]
+    	//String[] args = [env.getProperty("opc.host"), env.getProperty("opc.domain"), env.getProperty("opc.user"), env.getProperty("opc.password"), "", env.getProperty("opc.server")]
+		//ConnectionConfiguration connConfig = new ConnectionConfiguration(args);
+		//println "Using parms: ${args}"
 		
-		if (name == null) {
-			name = "test"
-		}
+		created = getOpcFactoryBean(context).createConnection(name, server, password)
 		
-		getOpcFactoryBean(context).createConnection(name, connConfig)
-		
-		return "Connection ${name} created"
+		return "Connection ${name} " + (created ? "created" : "not created")
 	}
 	
 	/**
@@ -68,11 +65,11 @@ class opc {
 	 * @param context
 	 * @return
 	 */
-	@Usage("List OPC Server Connections")
+	@Usage("List OPC Server definitions and Connections")
 	@Command
 	def list(InvocationContext context) {
 		println "Listing OPC server connections..."		
-		return getOpcFactoryBean(context).listConnections()
+		return getOpcFactoryBean(context).list()
 	}
 
 	/**

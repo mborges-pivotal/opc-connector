@@ -9,13 +9,14 @@ package com.gopivotal.tola.opc.boot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * Main - the spring boot application
  * @author mborges
  *
  */
-//@ComponentScan({"com.gopivotal.tola.wm.boot","com.gopivotal.tola.wm.util.service"}) 
+@ComponentScan({"com.gopivotal.tola.opc","com.gopivotal.tola.opc.boot"}) 
 @SpringBootApplication
 public class Main {
 	

@@ -1,0 +1,34 @@
+#host domain user password [CLSID|ProgId] tagList [async]
+opc:
+    servers:
+    -
+        name: matrikon
+        host: 192.168.9.168
+        domain: CORP
+        user: borgem
+        password: PASSWORD
+        progId: Matrikon.OPC.Simulation.1
+        tags: Random.Boolean,Random.Int1,Random.ArrayOfString
+    -
+        name: osipi
+        host: 192.168.9.168
+        domain: CORP
+        user: borgem
+        password: PASSWORD
+        progId: Matrikon.OPC.Simulation.1
+        tags: Random.Boolean,Random.Int1,Random.ArrayOfString
+
+## Spring Remote Shell
+shell:
+    ssh:
+        port: 2222
+    auth: simple
+    auth.simple.user:
+        name: admin
+        password: admin
+
+## Logging
+logging:
+    level: 
+        org.jinterop: ERROR
+        org.openscada.opc.lib.da: ERROR
