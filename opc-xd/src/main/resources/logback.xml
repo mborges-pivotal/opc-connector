@@ -60,7 +60,14 @@
     </logger>
 
     <logger name="com.gopivotal.tola.opc.xd" additivity="false">
-        <level value="DEBUG" />
+        <level value="ERROR" />
+        <appender-ref ref="dailyRollingFileAppender"/>
+        <appender-ref ref="minuteRollingFileAppender"/>
+        <appender-ref ref="consoleAppender" />
+    </logger>
+
+   <logger name="com.gopivotal.tola.opc" additivity="false">
+        <level value="ERROR" />
         <appender-ref ref="dailyRollingFileAppender"/>
         <appender-ref ref="minuteRollingFileAppender"/>
         <appender-ref ref="consoleAppender" />

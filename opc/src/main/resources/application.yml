@@ -3,7 +3,7 @@ opc:
     servers:
     -
         name: matrikon
-        host: 192.168.9.180
+        host: 192.168.9.188
         domain: CORP
         user: borgem
         password: PASSWORD
@@ -30,5 +30,7 @@ shell:
 ## Logging
 logging:
     level: 
-        org.jinterop: DEBUG
-        org.openscada.opc.lib.da: DEBUG
+        org.jinterop: 'DEBUG'
+        org.openscada.opc.lib.da: 'DEBUG'
+        com.gopivotal.tola.opc: 'ERROR'
+        

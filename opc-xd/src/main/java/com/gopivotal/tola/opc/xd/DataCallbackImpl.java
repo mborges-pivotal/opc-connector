@@ -27,7 +27,7 @@ public class DataCallbackImpl implements DataCallback {
 	
 	// buffering OPC events
 	private int BUFFER_COUNT = 1000;
-	private BlockingQueue<String> bq = new ArrayBlockingQueue<String>(BUFFER_COUNT);
+	private BlockingQueue<OpcItemData> bq = new ArrayBlockingQueue<OpcItemData>(BUFFER_COUNT);
 		
 	private String name;
 	
@@ -36,12 +36,12 @@ public class DataCallbackImpl implements DataCallback {
 	}
 
 	public void changed(Item item, ItemState state) {
-		String event = dumpItemState(item, state);
-		logger.debug(event);
+		OpcItemData event = new OpcItemData(item, state);
+		logger.debug(event.toString());
 		bq.offer(event);
 	}
 	
-	public void drainQueue(List<String> events) {
+	public void drainQueue(List<OpcItemData> events) {
 		bq.drainTo(events, 100);
 	}
 

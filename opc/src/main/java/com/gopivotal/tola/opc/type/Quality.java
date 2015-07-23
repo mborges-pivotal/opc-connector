@@ -7,6 +7,13 @@
  */
 package com.gopivotal.tola.opc.type;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
 /**
  * Quality - Represents an Item Quality
  * 
@@ -112,11 +119,28 @@ public class Quality {
 		
 	}
 	
-	
+	public String toValueString() {
+		return "Quality [value=" + value + " Substatus=" + substatus() + " Limit=" + limit() + "]";
+	}
 	
 	@Override
 	public String toString() {
-		return "Quality [value=" + value + " Substatus=" + substatus() + " Limit=" + limit() + "]";
+		return substatus();
 	}	
+	
+	// JSON Serializer
+	@SuppressWarnings("serial")
+	public static class Serializer extends StdSerializer<Quality> {
+		public Serializer(Class<Quality> t) {
+			super(t);
+		}
+
+		public void serialize(Quality value, JsonGenerator jgen,
+				SerializerProvider provider) throws IOException,
+				JsonProcessingException {
+			jgen.writeString(value.quality());
+		}
+	}
+	
 
 }

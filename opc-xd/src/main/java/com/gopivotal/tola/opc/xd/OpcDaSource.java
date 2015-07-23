@@ -45,7 +45,7 @@ public class OpcDaSource implements ApplicationListener<ContextRefreshedEvent>, 
 	private OpcDaClient opc;
 	private DataCallbackImpl dcb;
 	
-	private List<String> events = new ArrayList<String>(100);
+	private List<OpcItemData> events = new ArrayList<OpcItemData>(100);
 
 	/**
 	 * generate - Either an usage_event or dynamic_basket depending on the ratio
@@ -61,9 +61,9 @@ public class OpcDaSource implements ApplicationListener<ContextRefreshedEvent>, 
 			return null;
 		}
 		
-		String result = events.remove(0);
+		OpcItemData itemData = events.remove(0);
 		
-		return result;
+		return itemData.toJsonString();
 	}
 
 	//////////////////////////////////////////

@@ -1,4 +1,3 @@
-
 package com.gopivotal.tola.opc.xd;
 
 import static org.junit.Assert.*;
