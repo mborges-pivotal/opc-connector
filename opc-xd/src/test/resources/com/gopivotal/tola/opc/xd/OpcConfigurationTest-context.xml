@@ -1,0 +1,27 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<context:property-placeholder
+		properties-ref="props" local-override="true" />
+	<util:properties id="props">
+		<prop key="clsId"></prop>
+		<prop key="progId">Matrikon.OPC.Simulation.1</prop>
+		<prop key="host">192.168.9.185</prop>
+		<prop key="domain">CORP</prop>
+		<prop key="user">borgem</prop>
+		<prop key="password">MetalSurf77!</prop>
+		<prop key="tags">Random.Boolean,Random.Int1,Random.ArrayOfString</prop>
+		<prop key="fixedRate">5000</prop>
+		<prop key="maxMessagesPerPoll">100</prop>
+	</util:properties>
+
+	<import resource="classpath:config/spring-module.xml" />
+
+	<!-- Override direct channel with a queue channel so the test will block 
+		until a message is received -->
+	<int:channel id="output">
+		<int:queue />
+	</int:channel>
+</beans>

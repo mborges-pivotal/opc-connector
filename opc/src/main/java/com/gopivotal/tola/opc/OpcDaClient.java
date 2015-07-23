@@ -110,10 +110,14 @@ public class OpcDaClient {
 		connected = true;
 	}
 
-	public void addItem(String tag) throws JIException,
-			AddFailedException {
+	public void addItem(String tag) {
 		if (connected) {
-			access.addItem(tag, dcb);
+			try {
+				access.addItem(tag, dcb);
+			} catch (JIException | AddFailedException e) {
+				e.printStackTrace();
+				throw new IllegalArgumentException(e);
+			}
 		}
 	}
 
@@ -149,8 +153,8 @@ public class OpcDaClient {
 	public void disconnect() {
 		if (connected) {
 
-			logger.info("server state start time {}", server.getServerState().getStartTime());
-			logger.info("server state group count {}", server.getServerState().getGroupCount());
+			//logger.info("server state start time {}", server.getServerState().getStartTime());
+			//logger.info("server state group count {}", server.getServerState().getGroupCount());
 			if (access != null) {
 				try {
 					access.unbind();

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration
+		http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/task 
+		http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<int:inbound-channel-adapter ref="opc"
+		method="generate" channel="output" auto-startup="false">
+		<int:poller task-executor="executor" fixed-delay="${fixedDelay:5000}"
+			max-messages-per-poll="${maxMsgPoll:100}" />
+	</int:inbound-channel-adapter>
+
+	<task:executor id="executor" pool-size="${poolSize:1}" />
+
+	<bean id="opc" class="com.gopivotal.tola.opc.xd.OpcDaSource">
+		<property name="clsId" value="${clsId}" />
+		<property name="progId" value="${progId}" />
+		<property name="host" value="${host}" />
+		<property name="domain" value="${domain}" />
+		<property name="user" value="${user}" />
+		<property name="password" value="${password}" />
+		<property name="tags" value="${tags}" />
+	</bean>
+
+	<int:channel id="output" />
+
+
+</beans>

@@ -8,6 +8,14 @@
 package com.gopivotal.tola.opc.servers;
 
 
+/**
+ * MatrikonServer Information
+ * 
+ * {@link http://www.matrikonopc.com/}
+ * 
+ * @author mborges
+ *
+ */
 public class MatrikonServer implements IServerConfiguration
 {
 	
