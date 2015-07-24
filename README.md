@@ -26,11 +26,40 @@ The idea is to use the opc client to explorer the OPC server and the Spring XD s
 You can run from maven or use the Spring Boot single jar
 
 1. ```mvn spring-boot:run``` Or
-2. ```java -jar target/opc-0.0.1-SNAPSHOT.jar
+2. ```java -jar target/opc-0.0.1-SNAPSHOT.jar```
 
 Once the client is running you can connect using ssh. The default port is 2222 and user/password is admin/admin.
 
 ```ssh -p 2222 admin@localhost```
 
 Then type **opc** to see the command options.
+
+```
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v1.3.0.M2) on mborgesalmacpro
+> opc
+usage: opc [-h | --help] COMMAND [ARGS]
+
+The most commonly used opc commands are:
+   list             List OPC Server definitions and Connections
+   connect          Connect to OPC Server
+   tags             list OPC Server tags
+   atag             Add tag to listen
+   rtag             Remove tag to listen
+   listen           Listen tag updates from OPC Server
+   server           create OPC Server
+   disconnect       Disconnect from OPC Server
+   quiesce          Quiesce OPC Server
+```
+
+## Configuration
+
+All the configuration is done via *application.yml* file and normal Spring boot capabilities for overwriting the configuration from the command line applies
+
+See [Project Wiki for Details](https://github.com/mborges-pivotal/opc-connector/wiki)
 
