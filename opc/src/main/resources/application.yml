@@ -30,7 +30,8 @@ shell:
 ## Logging
 logging:
     level: 
-        org.jinterop: 'DEBUG'
-        org.openscada.opc.lib.da: 'DEBUG'
-        com.gopivotal.tola.opc: 'ERROR'
+        org.jinterop: 'ERROR'
+        org.jinterop.dcom.*: 'DEBUG'
+        org.openscada.opc.lib.da.*: 'DEBUG'
+        com.gopivotal.tola.opc.*: 'DEBUG'
         

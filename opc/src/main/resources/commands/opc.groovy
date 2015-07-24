@@ -17,7 +17,7 @@ class opc {
 		OpcFactoryBean opcFactory = beanFactory.getBean(com.gopivotal.tola.opc.boot.OpcFactoryBean.class)
 		return opcFactory
 	}
-		
+
 	/**
 	 * CONNECT
 	 * 
@@ -27,21 +27,33 @@ class opc {
 	 */
 	@Usage("Connect to OPC Server")
 	@Command
-	def connect(InvocationContext context, @Usage("The name of the Connection to create") @Required @Argument String name,  
-		@Usage("The name server to use") @Required @Argument String server,
-		@Usage("password to use") @Argument String password) {
-		println "Connection to OPC server..."
-		
-		//Environment env = context.attributes["spring.environment"]
-    	//String[] args = [env.getProperty("opc.host"), env.getProperty("opc.domain"), env.getProperty("opc.user"), env.getProperty("opc.password"), "", env.getProperty("opc.server")]
-		//ConnectionConfiguration connConfig = new ConnectionConfiguration(args);
-		//println "Using parms: ${args}"
-		
+	def connect(InvocationContext context, @Usage("The name of the Connection to create") @Required @Argument String name,
+			@Usage("The name server to use") @Required @Argument String server,
+			@Usage("password to use") @Argument String password) {
+
 		created = getOpcFactoryBean(context).createConnection(name, server, password)
-		
+
 		return "Connection ${name} " + (created ? "created" : "not created")
 	}
-	
+
+	/**
+	 * SERVER
+	 *
+	 * @param context
+	 * @param name
+	 * @return
+	 */
+	@Usage("create OPC Server")
+	@Command
+	def server(InvocationContext context, @Usage("The name of the server") @Required @Argument String name,
+			@Usage("list of parms - name=value,name=value") @Required @Argument String parms,
+			@Usage("server to use as base") @Argument String server) {
+
+		created = getOpcFactoryBean(context).createServer(name, parms, server)
+
+		return "Server ${name} " + (created ? "created" : "not created")
+	}
+
 	/**
 	 * DISCONNECT
 	 * 
@@ -52,13 +64,12 @@ class opc {
 	@Usage("Disconnect from OPC Server")
 	@Command
 	def disconnect(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name) {
-		
-		println "Disconnecting to OPC server..."	
+
 		getOpcFactoryBean(context).destroyConnection(name)
-		
+
 		return "Connection ${name} destroyed"
 	}
-	
+
 	/**
 	 * LIST CONNECTIONS
 	 * 
@@ -68,7 +79,6 @@ class opc {
 	@Usage("List OPC Server definitions and Connections")
 	@Command
 	def list(InvocationContext context) {
-		println "Listing OPC server connections..."		
 		return getOpcFactoryBean(context).list()
 	}
 
@@ -84,11 +94,9 @@ class opc {
 	@Command
 	def tags(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name, @Usage("initial tag branch") @Argument String branch) {
 
-		getOpcFactoryBean(context).dumpRootTree(name)
-		
-		return "See log for OPC tags"
+		return getOpcFactoryBean(context).dumpRootTree(name)
 	}
-	
+
 	/**
 	 * ADD TAG
 	 * 
@@ -102,7 +110,7 @@ class opc {
 	def atag(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name, @Required @Usage("tag name") @Argument String tag) {
 
 		getOpcFactoryBean(context).addTag(name, tag)
-		
+
 		return "tag ${tag} added to connection ${name}"
 	}
 
@@ -119,10 +127,10 @@ class opc {
 	def rtag(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name, @Required @Usage("tag name") @Argument String tag) {
 
 		getOpcFactoryBean(context).removeTag(name, tag)
-		
+
 		return "tag ${tag} removec to connection ${name}"
 	}
-	
+
 	/**
 	 * LISTEN
 	 * 
@@ -133,9 +141,9 @@ class opc {
 	@Usage("Listen tag updates from OPC Server")
 	@Command
 	def listen(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name) {
-		
+
 		getOpcFactoryBean(context).listen(name)
-		
+
 		return "Connection ${name} is listening"
 	}
 
@@ -149,9 +157,9 @@ class opc {
 	@Usage("Quiesce OPC Server")
 	@Command
 	def quiesce(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name) {
-		
+
 		getOpcFactoryBean(context).quiesce(name)
-		
+
 		return "Connection ${name} is quiesce"
 	}
 }

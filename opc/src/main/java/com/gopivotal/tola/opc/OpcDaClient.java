@@ -20,6 +20,7 @@ import org.openscada.opc.lib.da.Server;
 import org.openscada.opc.lib.da.SyncAccess;
 import org.openscada.opc.lib.da.browser.Branch;
 import org.openscada.opc.lib.da.browser.Leaf;
+import org.openscada.opc.lib.da.browser.TreeBrowser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,15 +178,16 @@ public class OpcDaClient {
 		logger.info("Disconnected");
 	}
 
-	public void dumpRootTree() {
+	public String dumpRootTree() {
 
 		if (!connected) {
 			logger.info("not connected");
-			return;
+			return "not connected";
 		}
 
 		try {
-			dumpTree(server.getTreeBrowser().browse(), 0);
+			TreeBrowser tb = server.getTreeBrowser();
+			return dumpTree(tb.browse(), 0);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
@@ -193,6 +195,8 @@ public class OpcDaClient {
 		} catch (JIException e) {
 			e.printStackTrace();
 		}
+		
+		return "check logs for error";
 
 	}
 
@@ -248,21 +252,24 @@ public class OpcDaClient {
 				Quality.format(state.getQuality()));
 	}
 
-	public static void dumpTree(final Branch branch, final int level) {
+	public static String dumpTree(final Branch branch, final int level) {
+		
 		final StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < level; i++) {
 			sb.append("  ");
 		}
 		final String indent = sb.toString();
+		sb.setLength(0);
 
 		for (final Leaf leaf : branch.getLeaves()) {
-			System.out.println(indent + "Leaf: " + leaf.getName() + " ["
-					+ leaf.getItemId() + "]");
+			sb.append(indent + "Leaf: " + leaf.getName() + " ["
+					+ leaf.getItemId() + "]\n");
 		}
 		for (final Branch subBranch : branch.getBranches()) {
-			System.out.println(indent + "Branch: " + subBranch.getName());
-			dumpTree(subBranch, level + 1);
+			sb.append(indent + "Branch: " + subBranch.getName());
+			sb.append(dumpTree(subBranch, level + 1));
 		}
+		return sb.toString();
 	}
 
 	// InnerClass DataCallBack

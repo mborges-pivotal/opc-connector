@@ -78,15 +78,53 @@ public class OpcFactoryBean {
 		logger.info("Created connection '{}'", name);
 		return true;
 	}
+
+	// CREATE SERVER
+	public boolean createServer(String name, String parmList, String server) {
+		
+		Map<String, String> parms = new HashMap<String, String>();
+		String[] parmPairs = parmList.split(",");
+		for(String pair: parmPairs) {
+			String[] parts = pair.split("=");
+			parms.put(parts[0], parts[1]);
+		}
+		
+		ConnectionConfiguration connConfig = servers.get(server);
+		if (connConfig == null) {
+			connConfig = new ConnectionConfiguration();
+			connConfig.setPassword(parms.get("password"));
+		} else {
+			connConfig = connConfig.copy(parms.get("password"));
+		}
+		
+		connConfig.setName(name);
+		for(String key: parms.keySet()) {
+			if (key.equals("password")) {
+				continue; // already set above
+			} else if (key.equals("user")) {
+				connConfig.setUser(parms.get("user"));
+			} else if (key.equals("host")) {
+				connConfig.setHost(parms.get("host"));
+			} else if (key.equals("domain")) {
+				connConfig.setDomain(parms.get("domain"));
+			}
+		}
+		
+		servers.put(name, connConfig);
+		
+		logger.info("Created server '{}'", connConfig);
+		return true;
+	}
 	
 	// DUMP ROOT TREE
-	public void dumpRootTree(String name) {
+	public String dumpRootTree(String name) {
 		OpcDaClient opc = connections.get(name);
 		if (opc == null) {
-			logger.info("connection '{}' not found - NOP", name);
-			return;
+			String msg = String.format("connection '%s' not found - NOP", name);
+			logger.info(msg);
+			return msg;
 		}
-		opc.dumpRootTree();
+		return opc.dumpRootTree();
 	}
 	
 	// ADD TAG
