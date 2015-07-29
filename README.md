@@ -20,8 +20,10 @@ The idea is to use the opc client to explorer the OPC server and the Spring XD s
   1. ```mvn install```
 2. Build single jar Spring boot App
   2. ```mvn package spring-boot:repackage```
+3. Build the *opc-xd* project and upload the module to Spring XD. We tested with 1.1.2 and 1.2.0.
+  3. ```mvn package -DskipTests``` - We don't want to run the tests
 
-## Running
+## Running the opc client
 
 You can run from maven or use the Spring Boot single jar
 
@@ -32,7 +34,7 @@ Once the client is running you can connect using ssh. The default port is 2222 a
 
 ```ssh -p 2222 admin@localhost```
 
-Then type **opc** to see the command options.
+Then type **opc** to see the available commands. 
 
 ```
   .   ____          _            __ _ _
@@ -56,6 +58,23 @@ The most commonly used opc commands are:
    disconnect       Disconnect from OPC Server
    quiesce          Quiesce OPC Server
 ```
+## Using the Spring XD opc source module
+
+1. Upload the module and check
+  1. ```module upload --file [OPX-XD_TARGET]/opc.xd-0.0.1-SNAPSHOT.jar --name opc --type source```
+  1. ```module info source:opc```
+2. Create stream and deploy
+  2. ```stream create --name opc-stream --definition "opc --progId=Matrikon.OPC.Simulation.1 --host=192.168.9.192 --domain=CORP --user=borgem --password=PASSWORD --tags=Random.Boolean,Random.Int1,Random.ArrayOfString --clsId=OR-PROGID | log "``` --deploy
+   
+Once the stream is deployed the opc source will start receiving the update events for the configured tags in a json format. 
+
+```
+{"id":"Random.Int1","value":"84","timestamp":"07/24/2015 02:15:45.347 AM","quality":"good"}
+{"id":"Random.Boolean","value":"true","timestamp":"07/24/2015 02:15:45.347 AM","quality":"good"}
+{"id":"Random.ArrayOfString","value":"like,never,before,,Matrikon's","timestamp":"07/24/2015 02:15:45.347 AM","quality":"good"}
+```
+Undeploy the stream to stop receiving the events. 
+  
 
 ## Configuration
 
