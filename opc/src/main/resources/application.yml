@@ -8,7 +8,6 @@ opc:
         user: borgem
         password: PASSWORD
         progId: Matrikon.OPC.Simulation.1
-        tags: Random.Boolean,Random.Int1,Random.ArrayOfString
     -
         name: graybox
         host: 192.168.9.180
@@ -16,7 +15,13 @@ opc:
         user: borgem
         password: PASSWORD
         progId: Graybox.Simulator.1
-        tags: Random.Boolean,Random.Int1,Random.ArrayOfString
+    -
+        name: osipi
+        host: localhost
+        domain: INV
+        user: mborges
+        password: PASSWORD
+        progId: OSI.DA.1
 
 ## Spring Remote Shell
 shell:
