@@ -117,14 +117,14 @@ public class OpcFactoryBean {
 	}
 	
 	// DUMP ROOT TREE
-	public String dumpRootTree(String name) {
+	public String dumpRootTree(String name, boolean flat, String filter) {
 		OpcDaClient opc = connections.get(name);
 		if (opc == null) {
 			String msg = String.format("connection '%s' not found - NOP", name);
 			logger.info(msg);
 			return msg;
 		}
-		return opc.dumpRootTree();
+		return opc.dumpRootTree(filter, flat);
 	}
 	
 	// ADD TAG
@@ -206,6 +206,62 @@ public class OpcFactoryBean {
 			logger.info(line);
 		}
 		return sb.toString();
+	}
+
+	// LIST OPC SERVERS - list opc servers from a server connection
+	public String listOpcServers(String name) {
+		StringBuffer sb = new StringBuffer("*** OPC Servers\n");
+		OpcDaClient opc = connections.get(name);
+		if (opc == null) {
+			logger.info("server '{}' not found - NOP", name);
+			return "";
+		}		
+		try {
+			sb.append(opc.listOPCServers());
+		} catch (IllegalArgumentException | UnknownHostException | JIException e) {
+			e.printStackTrace();
+		}
+
+		return sb.toString();
+	}
+
+	/////////////////////////////////
+	// Groups
+	/////////////////////////////////
+	
+	public String addItemToGroup(String name, String gName, String iName) {
+		OpcDaClient opc = connections.get(name);
+		if (opc == null) {
+			logger.info("connection '{}' not found - NOP", name);
+			return "";
+		}
+		return opc.addItemToGroup(gName, iName);
+	}
+	
+	public String removeGroupItem(String name, String gName, String iName) {
+		OpcDaClient opc = connections.get(name);
+		if (opc == null) {
+			logger.info("connection '{}' not found - NOP", name);
+			return "";
+		}
+		return opc.removeGroupItem(gName, iName);		
+	}
+	public String readGroupItems(String name, String gName) {
+		OpcDaClient opc = connections.get(name);
+		if (opc == null) {
+			logger.info("connection '{}' not found - NOP", name);
+			return "";
+		}
+		return opc.readGroupItems(gName);
+	}
+	
+	public String listGroups(String name) {
+		OpcDaClient opc = connections.get(name);
+		if (opc == null) {
+			logger.info("connection '{}' not found - NOP", name);
+			return "";
+		}
+		return opc.listGroups();
 	}
 
 	////////////////////////////////////////////////////////////

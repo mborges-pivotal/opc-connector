@@ -37,6 +37,20 @@ class opc {
 	}
 
 	/**
+	 * SERVERS
+	 * 
+	 * @param context
+	 * @param name
+	 * @return
+	 */
+	@Usage("list OPC Servers from existing server connection")
+	@Command
+	def servers(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name) {
+
+		return getOpcFactoryBean(context).listOpcServers(name)
+	}
+
+	/**
 	 * SERVER
 	 *
 	 * @param context
@@ -92,9 +106,17 @@ class opc {
 	 */
 	@Usage("list OPC Server tags")
 	@Command
-	def tags(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name, @Usage("initial tag branch") @Argument String branch) {
+	def tags(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name, @Usage("flat browsing [true|false]") @Argument Boolean flat, @Usage("filter, only when using flat browsing - can use *") @Argument String filter) {
 
-		return getOpcFactoryBean(context).dumpRootTree(name)
+		boolean isFlat = !flat;
+
+		if (filter == null) {
+			filter = "";
+		}
+
+		println("Browsing mode isFlat: ${isFlat}")
+
+		return getOpcFactoryBean(context).dumpRootTree(name, flat, filter);
 	}
 
 	/**
@@ -130,6 +152,39 @@ class opc {
 
 		return "tag ${tag} removec to connection ${name}"
 	}
+
+	///////////// GROUPS
+	
+	@Usage("Add group item")
+	@Command
+	def agroup(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name,
+			@Required @Usage("group name") @Argument String group,
+			@Required @Usage("item name") @Argument String item) {
+		return getOpcFactoryBean(context).addItemToGroup(name, group, item)
+	}
+
+	@Usage("Remove group item")
+	@Command
+	def rgroup(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name,
+			@Required @Usage("group name") @Argument String group,
+			@Required @Usage("item name") @Argument String item) {
+		return getOpcFactoryBean(context).removeGroupItem(name, group, item)
+	}
+
+	@Usage("Read (Listen) group items once")
+	@Command
+	def lgroup(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name,
+			@Required @Usage("group name") @Argument String group) {
+		return getOpcFactoryBean(context).readGroupItems(name, group)
+	}
+
+	@Usage("List groups")
+	@Command
+	def groups(InvocationContext context, @Usage("The name of the Connection") @Required @Argument String name) {
+		return getOpcFactoryBean(context).listGroups(name)
+	}
+
+	//////////////
 
 	/**
 	 * LISTEN

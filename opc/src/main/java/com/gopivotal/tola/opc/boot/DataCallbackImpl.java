@@ -28,12 +28,12 @@ public class DataCallbackImpl implements DataCallback {
 	}
 
 	public void changed(Item item, ItemState state) {
-		logger.info(dumpItemState(item, state));
+		logger.info(dumpItemState(name, item, state));
 	}
 
 	// //// Helper
 
-	public String dumpItemState(final Item item, final ItemState state) {
+	public static String dumpItemState(String name, final Item item, final ItemState state) {
 		return String.format("Connection: %s - Item: %s, Value: %s, Timestamp: %s, Quality: %s", 
 				name,
 				item.getId(), state.getValue(),

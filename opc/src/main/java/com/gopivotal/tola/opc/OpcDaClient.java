@@ -2,10 +2,15 @@ package com.gopivotal.tola.opc;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.jinterop.dcom.common.JIException;
+import org.openscada.opc.dcom.list.ClassDetails;
 import org.openscada.opc.lib.common.AlreadyConnectedException;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.common.NotConnectedException;
@@ -14,13 +19,19 @@ import org.openscada.opc.lib.da.AddFailedException;
 import org.openscada.opc.lib.da.Async20Access;
 import org.openscada.opc.lib.da.DataCallback;
 import org.openscada.opc.lib.da.DuplicateGroupException;
+import org.openscada.opc.lib.da.Group;
 import org.openscada.opc.lib.da.Item;
 import org.openscada.opc.lib.da.ItemState;
 import org.openscada.opc.lib.da.Server;
 import org.openscada.opc.lib.da.SyncAccess;
+import org.openscada.opc.lib.da.UnknownGroupException;
+import org.openscada.opc.lib.da.browser.BaseBrowser;
 import org.openscada.opc.lib.da.browser.Branch;
 import org.openscada.opc.lib.da.browser.Leaf;
 import org.openscada.opc.lib.da.browser.TreeBrowser;
+import org.openscada.opc.lib.list.Categories;
+import org.openscada.opc.lib.list.Category;
+import org.openscada.opc.lib.list.ServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +60,7 @@ public class OpcDaClient {
 
 	private Server server;
 	private AccessBase access;
+	private Map<String, Map<String, Item>> groups = new HashMap<String, Map<String, Item>>();
 
 	private volatile boolean connected = false;
 
@@ -91,7 +103,7 @@ public class OpcDaClient {
 		server = new Server(ci, scheduler);
 
 		logger.info("Connecting...");
-		try {
+		try { 
 			server.connect();
 			createAccessBase();
 		} catch (JIException e) {
@@ -111,6 +123,11 @@ public class OpcDaClient {
 		connected = true;
 	}
 
+	/**
+	 * ADD_ITEM
+	 * 
+	 * @param tag
+	 */
 	public void addItem(String tag) {
 		if (connected) {
 			try {
@@ -178,7 +195,15 @@ public class OpcDaClient {
 		logger.info("Disconnected");
 	}
 
-	public String dumpRootTree() {
+	/**
+	 * DUMP_ROOT_TREE
+	 * 
+	 * @parma filter - "" or a name
+	 * @param flat - browse option flat or hierarchical
+	 * 
+	 * @return
+	 */
+	public String dumpRootTree(String filter, boolean flat) {
 
 		if (!connected) {
 			logger.info("not connected");
@@ -186,8 +211,26 @@ public class OpcDaClient {
 		}
 
 		try {
+			
+            // browse flat
+			if (flat) {
+				StringBuffer sb = new StringBuffer();
+	            final BaseBrowser flatBrowser = server.getFlatBrowser ();
+	            if ( flatBrowser != null )
+	            {
+	                for ( final String item : server.getFlatBrowser ().browse ( filter ) )
+	                {
+	                	sb.append(item);
+	                	sb.append("\n");
+	                }
+	            }
+	            return sb.toString();
+			}
+		
+			
 			TreeBrowser tb = server.getTreeBrowser();
 			return dumpTree(tb.browse(), 0);
+
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
@@ -200,6 +243,93 @@ public class OpcDaClient {
 
 	}
 
+
+	/**
+	 * DUMP_ITEM_STATE
+	 * 
+	 * @param item
+	 * @param state
+	 * @return
+	 */
+	public static String dumpItemState(final Item item, final ItemState state) {
+		return String.format("Item: %s, Value: %s, Timestamp: %s, Quality: %s",
+				item.getId(), state.getValue(),
+				Timestamp.format(state.getTimestamp()),
+				Quality.format(state.getQuality()));
+	}
+
+	/**
+	 * DUMP_TREE
+	 * 
+	 * @param branch
+	 * @param level
+	 * @return
+	 */
+	public static String dumpTree(final Branch branch, final int level) {
+		
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < level; i++) {
+			sb.append("  ");
+		}
+		final String indent = sb.toString();
+		sb.setLength(0);
+
+		for (final Leaf leaf : branch.getLeaves()) {
+			sb.append(indent + "Leaf: " + leaf.getName() + " ["
+					+ leaf.getItemId() + "]\n");
+		}
+		for (final Branch subBranch : branch.getBranches()) {
+			sb.append(indent + "Branch: " + subBranch.getName());
+			sb.append(dumpTree(subBranch, level + 1));
+		}
+		return sb.toString();
+	}
+
+	public String listOPCServers() throws IllegalArgumentException, UnknownHostException, JIException {
+		
+		StringBuffer sb = new StringBuffer();
+		
+		//final String host, final String user, final String password, final String domain
+        final ServerList serverList = new ServerList ( connConfig.getHost(), connConfig.getUser(), connConfig.getPassword(), connConfig.getDomain() );
+
+        // Getting an individual server detail
+        //final String cls = serverList.getClsIdFromProgId ( "Matrikon.OPC.Simulation.1" );
+        //ClassDetails cd = serverList.getDetails ( clsid );
+
+        Collection<ClassDetails> detailsList = serverList.listServersWithDetails ( new Category[] { Categories.OPCDAServer20 }, new Category[] {} );
+		
+		if (detailsList == null) {
+			return "No OPC servers found ";
+		}
+
+        for ( final ClassDetails details : detailsList )
+        {
+        	logger.debug(details.toString());
+        	
+            sb.append ( String.format ( "Found: %s\n", details.getClsId () ) );
+            sb.append ( String.format ( "\tProgID: %s\n", details.getProgId () ) );
+            sb.append ( String.format ( "\tDescription: %s\n", details.getDescription () ) );
+        }
+        
+        return sb.toString();
+	}
+	
+	
+	// ////////////////////////////////////////////////
+	// InnerClass DataCallBack
+	// /////////////////////////////////////////////////
+	private static class DataCallbackImpl implements DataCallback {
+
+		public void changed(Item item, ItemState state) {
+			System.out.println(dumpItemState(item, state));
+
+			/*
+			 * try { VariantDumper.dumpValue("\t", state.getValue()); } catch
+			 * (final JIException e) { e.printStackTrace(); }
+			 */
+		}
+	}
+	
 	// ////////////////////////////////////////////////
 	// helper methods
 	// /////////////////////////////////////////////////
@@ -238,52 +368,138 @@ public class OpcDaClient {
 	 * 
 	 * @see com.gopivotal.tola.opc.xd.IOpcDaClient#asyncRead()
 	 */
-	public void asyncRead() throws JIException, AddFailedException,
+	private void asyncRead() throws JIException, AddFailedException,
 			IllegalArgumentException, UnknownHostException,
 			NotConnectedException, DuplicateGroupException {
 		access = new Async20Access(server, PERIOD_ASYNC, INITIAL_REFRESH);
 
 	}
 
-	public static String dumpItemState(final Item item, final ItemState state) {
-		return String.format("Item: %s, Value: %s, Timestamp: %s, Quality: %s",
-				item.getId(), state.getValue(),
-				Timestamp.format(state.getTimestamp()),
-				Quality.format(state.getQuality()));
-	}
-
-	public static String dumpTree(final Branch branch, final int level) {
+	// ////////////////////////////////////////////////
+	// Bypass AccessBase - Groups
+	// /////////////////////////////////////////////////
+	
+	public String listGroups() {
 		
-		final StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < level; i++) {
-			sb.append("  ");
+		StringBuffer sb = new StringBuffer();
+		
+		for(String group: groups.keySet()) {			
+			sb.append(String.format("Group : %s\n", group));
+			Map<String, Item> items = groups.get(group);
+			for(String item: items.keySet()) {
+				sb.append(String.format("\t%s\n", item));
+			}
 		}
-		final String indent = sb.toString();
-		sb.setLength(0);
-
-		for (final Leaf leaf : branch.getLeaves()) {
-			sb.append(indent + "Leaf: " + leaf.getName() + " ["
-					+ leaf.getItemId() + "]\n");
-		}
-		for (final Branch subBranch : branch.getBranches()) {
-			sb.append(indent + "Branch: " + subBranch.getName());
-			sb.append(dumpTree(subBranch, level + 1));
-		}
+		
 		return sb.toString();
 	}
+	
+	public String readGroupItems(String gName) {
 
-	// InnerClass DataCallBack
-	private static class DataCallbackImpl implements DataCallback {
-
-		public void changed(Item item, ItemState state) {
-			System.out.println(dumpItemState(item, state));
-
-			/*
-			 * try { VariantDumper.dumpValue("\t", state.getValue()); } catch
-			 * (final JIException e) { e.printStackTrace(); }
-			 */
+		if (!connected) {
+			logger.info("not connected");
+			return "not connected";
 		}
+		
+		if (!groups.containsKey(gName)) {
+			return String.format("Group '%s' not found - NOP", gName);			
+		}
+
+		StringBuffer sb = new StringBuffer();
+		Map<String, Item> items = groups.get(gName);
+		for(Entry<String, Item> entrySet: items.entrySet()) {
+			Item item = entrySet.getValue();
+			try {
+				sb.append(dumpItemState(item, item.read(false)) + "\n");
+			} catch (JIException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return sb.toString();		
 	}
+	
+	// REMOVE_GROUP_ITEM
+	public String removeGroupItem(String gName, String iName) {
+		
+		if (!connected) {
+			logger.info("not connected");
+			return "not connected";
+		}
+		
+		Group group = null;
+		try {
+			group = server.findGroup(gName);
+		} catch (IllegalArgumentException | UnknownHostException | JIException | NotConnectedException e1) {
+			e1.printStackTrace();
+			throw new IllegalStateException(e1);
+		} catch (UnknownGroupException e1) {
+			e1.printStackTrace();
+			return String.format("Group '%s' not found - NOP", gName);
+		}
+		
+		try {
+			group.removeItem(iName);
+			groups.get(gName).remove(iName);	
+			
+			if (groups.size() <= 0) {
+				server.removeGroup(group, true);
+				groups.remove(gName);
+				logger.debug("Removing group {}", gName);
+			}
+			
+		} catch (IllegalArgumentException | UnknownHostException | JIException e) {
+			e.printStackTrace();
+		}
+		
+		return String.format("Item '%s' removed from group '%s'", iName, gName);
+	}
+	
+	// ADD_ITEM_TO_GROUP
+	public String addItemToGroup(String gName, String iName) {
+
+		if (!connected) {
+			logger.info("not connected");
+			return "not connected";
+		}
+
+		boolean groupExist = groups.containsKey(gName);
+		
+		Group group = null;
+		Map<String, Item> items = null;
+		
+		if (!groupExist) {
+			items = new HashMap<String, Item>();
+			groups.put(gName, items);
+			
+			try {
+				group = server.addGroup(gName);
+				group.setActive(true);
+			} catch (IllegalArgumentException | UnknownHostException
+					| NotConnectedException | JIException
+					| DuplicateGroupException e) {
+				e.printStackTrace();
+				throw new IllegalStateException(String.format("Could not add group '%s' - %s", gName, e.getMessage()));
+			}
+		} else {
+			items = groups.get(gName);
+		} // Groups
+				
+		try {
+			Item item = group.addItem(iName);
+			item.setActive(true);
+			items.put(iName, item);
+		} catch (IllegalArgumentException | JIException e) {
+			e.printStackTrace();
+		} catch (AddFailedException e) {
+			e.printStackTrace();
+		} // Item
+		
+		return String.format("Item '%s' added to group '%s'", iName, gName);
+
+	}
+	
+	
 
 	// ////////////////////////////////////////////////
 	// Main
@@ -305,8 +521,10 @@ public class OpcDaClient {
 		System.out.println("Args: " + Arrays.toString(args));
 
 		OpcDaClient opc = new OpcDaClient();
-
+		
 		opc.connConfig = new ConnectionConfiguration(args);
+
+		System.out.println(opc.listOPCServers());
 
 		if (args.length > 7) {
 			opc.async = true;
