@@ -29,6 +29,7 @@ You can run from maven or use the Spring Boot single jar
 
 1. ```mvn spring-boot:run``` Or
 2. ```java -jar target/opc-0.0.1-SNAPSHOT.jar```
+  2. You can provide your own *application.yml* using the --spring.config.location=application.yml 
 
 Once the client is running you can connect using ssh. The default port is 2222 and user/password is admin/admin.
 
@@ -48,16 +49,70 @@ Then type **opc** to see the available commands.
 usage: opc [-h | --help] COMMAND [ARGS]
 
 The most commonly used opc commands are:
-   list             List OPC Server definitions and Connections
+   groups           List groups
    connect          Connect to OPC Server
-   tags             list OPC Server tags
-   atag             Add tag to listen
-   rtag             Remove tag to listen
    listen           Listen tag updates from OPC Server
-   server           create OPC Server
+   list             List OPC Server definitions and Connections
+   servers          list OPC Servers from existing server connection
    disconnect       Disconnect from OPC Server
+   atag             Add tag to listen
    quiesce          Quiesce OPC Server
+   tags             list OPC Server tags
+   agroup           Add group item
+   rgroup           Remove group item
+   rtag             Remove tag to listen
+   lgroup           Read (Listen) group items once
+   server           create OPC Server
 ```
+You can get quick help by using the *--help* and detail using *man*. For example:
+
+```
+> opc connect --help
+usage: opc [-h | --help] connect <name> <server> <password>
+
+   [-h | --help] this help
+```
+And
+
+```
+> man opc connect
+NAME
+       opc connect - Connect to OPC Server
+
+SYNOPSIS
+       opc [-h | --help] connect <name> <server> <password>
+
+STREAM
+       opc connect <java.lang.Void, java.lang.Object>
+
+PARAMETERS
+       [-h | --help]
+           Display this help message
+
+       <name>
+           The name of the Connection to create
+
+       <server>
+           The name server to use
+
+       <password>
+           password to use
+
+```
+## Typical opc client flows
+
+1. ```opc list``` - to see available servers
+2. ```opc server``` - create a server definition based on existing servers
+3. ```opc connect``` - connect to opc server
+  3. ```opc servers``` - list all opc servers from the current connected server 
+4. ```opc tags``` - list server tags. You may want to use flat browsing and filters for production servers.
+5. Now you have 2 ways to retrieve data
+  5. EXPERIMENTAL - Using groups
+    5. ```opc agroup```, ```opc groups```,```opc lgroups``` and ```opc rgroup``` - add, list, listen/read, remove group items
+  6. Async read (used by Spring XD)
+    6. ```opc atag```, ```opc listen```, ```opc quiesce``` and ```opc rtag``` - add, listen, pause, remove items
+7. ```opc disconnect``` 
+
 ## Using the Spring XD opc source module
 
 1. Upload the module and check
