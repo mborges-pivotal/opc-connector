@@ -4,6 +4,8 @@
 **/.classpath
 **/.settings
 
+**/log
+
 # OS generated files #
 ######################
 .DS_Store

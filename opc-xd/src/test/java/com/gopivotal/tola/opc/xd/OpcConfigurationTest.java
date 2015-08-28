@@ -51,6 +51,7 @@ public class OpcConfigurationTest {
 			.getLogger("com.gopivotal.tola.opc.xd.OpcConfigurationTest");
 
 	// trying to remove the java.util.logging
+	/*
 	private static final LogManager logManager = LogManager.getLogManager();
 	static {
 		try {
@@ -59,6 +60,7 @@ public class OpcConfigurationTest {
 			exception.printStackTrace();
 		}
 	}
+	*/
 
 	@Test
 	public void test() {

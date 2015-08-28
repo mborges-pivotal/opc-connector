@@ -8,10 +8,10 @@
 	<util:properties id="props">
 		<prop key="clsId"></prop>
 		<prop key="progId">Matrikon.OPC.Simulation.1</prop>
-		<prop key="host">192.168.9.188</prop>
+		<prop key="host">192.168.9.191</prop>
 		<prop key="domain">CORP</prop>
 		<prop key="user">borgem</prop>
-		<prop key="password">MetalSurf77!</prop>
+		<prop key="password">YOUR_PASSWORD</prop>
 		<prop key="tags">Random.Boolean,Random.Int1,Random.Int4,Random.Real8,Random.String,Random.ArrayOfString,Random.UInt1</prop>
 		<prop key="fixedRate">5000</prop>
 		<prop key="maxMessagesPerPoll">100</prop>

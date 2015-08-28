@@ -37,9 +37,9 @@ public class OpcSourceModuleIntegrationTest {
 				"opc"));
 	}
 
-	//@Test
+	@Test
 	public void test() {
-		String password = "MetalSurf77!";
+		String password = "YOUR_PASSWORD";
 		SingleNodeProcessingChainConsumer chain = chainConsumer(application, "opcStream",
 				String.format("opc --password='%s'", password));
 

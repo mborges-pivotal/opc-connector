@@ -135,13 +135,11 @@ public class OpcDaSource implements ApplicationListener<ContextRefreshedEvent>, 
 	}
 	
 	// That method will be called after the context is fully wired
-	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		logger.debug("onApplicationEvent: {}", event.toString());
 	}
 	
 
-	@Override
 	public void afterPropertiesSet() throws Exception {
 
 
@@ -172,7 +170,6 @@ public class OpcDaSource implements ApplicationListener<ContextRefreshedEvent>, 
 		opc.start();
 	}
 
-	@Override
 	public void destroy() throws Exception {
 		// Disconnect
 		logger.debug("Disconnecting....");
