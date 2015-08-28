@@ -3,18 +3,36 @@ opc:
     servers:
     -
         name: matrikon
-        host: 192.168.9.188
+        host: localhost
         domain: CORP
         user: borgem
         password: PASSWORD
         progId: Matrikon.OPC.Simulation.1
+        clsId: f8582cf2-88fb-11d0-b850-00c0f0104305
     -
         name: graybox
-        host: 192.168.9.180
+        host: localhost
         domain: CORP
         user: borgem
         password: PASSWORD
         progId: Graybox.Simulator.1
+        clsId: 2c2e36b7-fe45-4a29-bf89-9bfba6a40857
+    -
+        name: Prosys
+        host: localhost
+        domain: CORP
+        user: borgem
+        password: PASSWORD
+        progId: Prosys.OPC.Simulation
+        clsId: eb3a5f8e-7938-464c-aefa-898335b1e6b5
+    -
+        name: Prosys2
+        host: localhost
+        domain: CORP
+        user: borgem
+        password: PASSWORD
+        progId: Prosys.OPC.Service
+        clsId: f77b6d25-b514-4c8c-89fb-dd158338d1fc
     -
         name: osipi
         host: localhost
@@ -43,7 +61,7 @@ shell:
 logging:
     level: 
         org.jinterop: 'ERROR'
-        org.jinterop.dcom.*: 'DEBUG'
-        org.openscada.opc.lib.da.*: 'DEBUG'
-        com.gopivotal.tola.opc.*: 'DEBUG'
+        org.jinterop.dcom: 'DEBUG'
+        org.openscada.opc.lib.da: 'DEBUG'
+        com.gopivotal.tola.opc: 'DEBUG'
         

@@ -43,8 +43,8 @@ public class OpcDaClient {
 	Logger logger = LoggerFactory
 			.getLogger("com.gopivotal.tola.opc.OpcDaClient");
 
-	private int PERIOD_SYNC = 500;
-	private int PERIOD_ASYNC = 100;
+	private int PERIOD_SYNC = 1000;
+	private int PERIOD_ASYNC = 1000;
 	private boolean INITIAL_REFRESH = false;
 
 	private boolean async;

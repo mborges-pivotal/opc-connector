@@ -11,7 +11,7 @@
 
 	<int:inbound-channel-adapter ref="opc"
 		method="generate" channel="output" auto-startup="false">
-		<int:poller task-executor="executor" fixed-delay="${fixedDelay:5000}"
+		<int:poller task-executor="executor" fixed-delay="${fixedDelay:1000}"
 			max-messages-per-poll="${maxMsgPoll:100}" />
 	</int:inbound-channel-adapter>
 

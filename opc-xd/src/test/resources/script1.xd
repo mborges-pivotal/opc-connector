@@ -1,0 +1,9 @@
+
+## Azerbaijan-Georgia-Turkey
+stream create agt-well1 --definition "opc --clsId=NOT_USED --password=MetalSurf77! --host=192.168.9.164 --outputType=application/json --progId=Matrikon.OPC.Simulation.1 --user=borgem --tags=Random.Int1,Random.Int2 --domain=CORP | filter --expression=#jsonPath(payload,'$.quality').contains('good') | null"
+
+stream create agt-well1-bad --definition "tap:stream:agt-well1 > filter --expression=#jsonPath(payload,'$.quality').contains('bad') | counter" --deploy
+
+stream create agt-well1-pressure --definition "tap:stream:agt-well1.filter > filter --expression=#jsonPath(payload,'$.id')=='Random.Int1' | transform --expression=#jsonPath(payload,'$.value')| rich-gauge" --deploy
+stream create agt-well1-temperature --definition "tap:stream:agt-well1.filter > filter --expression=#jsonPath(payload,'$.id')=='Random.Int2' | transform --expression=#jsonPath(payload,'$.value')| rich-gauge" --deploy
+

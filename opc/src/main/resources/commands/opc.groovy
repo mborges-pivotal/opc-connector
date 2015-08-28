@@ -19,6 +19,24 @@ class opc {
 	}
 
 	/**
+	 * dcom
+	 *
+	 * @param context
+	 * @param name
+	 * @return
+	 */
+	@Usage("DCOM TEST")
+	@Command
+	def dcom(InvocationContext context, 
+			@Usage("The name server to use") @Required @Argument String server,
+			@Usage("password to use") @Argument String password) {
+
+		getOpcFactoryBean(context).dcomTest(server, password)
+
+		return "more information in the server logs"
+	}
+			
+	/**
 	 * CONNECT
 	 * 
 	 * @param context

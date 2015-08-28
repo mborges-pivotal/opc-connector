@@ -33,6 +33,9 @@ public class OpcFactoryBean {
 	@Autowired
 	private ServerConfigList srvConfigs;
 	
+	@Autowired
+	private OpcDCOMClient dcomClient;
+	
 	private Map<String, ConnectionConfiguration> servers = new HashMap<String, ConnectionConfiguration>();
 	private Map<String, OpcDaClient> connections = new HashMap<String, OpcDaClient>();
 	
@@ -49,6 +52,17 @@ public class OpcFactoryBean {
 		listServers();
 	}	
 
+	// DCOM TEST
+	public void dcomTest(String server, String pswd) {
+		ConnectionConfiguration connConfig = servers.get(server);
+		if (connConfig == null) {
+			logger.info("Server '{}' not found.", server);	
+			return;
+		}
+
+		dcomClient.test(connConfig, pswd);
+	}
+	
 	// CREATE CONNECTION
 	public boolean createConnection(String name, String server, String pswd) {
 		

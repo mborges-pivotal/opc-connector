@@ -13,29 +13,37 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>com.gopivotal.tola.opc.boot.Main</start-class>
+		<spring.boot.version>1.3.0.M2</spring.boot.version>
 		<openscada.utgard.version>1.2.0-SNAPSHOT</openscada.utgard.version>
 		<openscada.jinterop.core.version>2.1.8-SNAPSHOT</openscada.jinterop.core.version>
 		<openscada.jinterop.deps.version>1.3.0-SNAPSHOT</openscada.jinterop.deps.version>
 	</properties>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.3.0.M2</version>
-	</parent>
+	<!-- <parent> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-parent</artifactId> 
+		<version>1.3.0.M2</version> </parent> -->
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+                <version>3.3</version>
+            </plugin>		
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.boot.version}</version>
 			</plugin>
 		</plugins>
 	</build>
+
+	<!-- <distributionManagement> <repository> <id>bintray-package-opc-connector</id> 
+		<url>https://api.bintray.com/content/mborges-pivotal/generic/opc-connector/head/opc-0.0.1-SNAPSHOT.jar</url> 
+		</repository> </distributionManagement> -->
 
 	<pluginRepositories>
 		<pluginRepository>
@@ -71,23 +79,37 @@
 	</repositories>
 
 	<dependencies>
+
+		<dependency>
+			<!-- Import dependency management from Spring Boot -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-dependencies</artifactId>
+			<version>${spring.boot.version}</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<version>${spring.boot.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-remote-shell</artifactId>
+			<version>${spring.boot.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.openscada.utgard</groupId>
 			<artifactId>org.openscada.opc.lib</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
+			<version>${openscada.utgard.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscada.utgard</groupId>
 			<artifactId>org.openscada.opc.dcom</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
+			<version>${openscada.utgard.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscada.jinterop</groupId>
@@ -103,11 +125,14 @@
 			<groupId>jcifs</groupId>
 			<artifactId>jcifs</artifactId>
 			<version>1.3.17</version>
-		</dependency> 
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
+			<version>4.8.2</version>
 		</dependency>
+
 	</dependencies>
 </project>
