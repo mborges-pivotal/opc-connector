@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mborges-pivotal/opc-connector.svg?branch=master)](https://travis-ci.org/mborges-pivotal/opc-connector.svg?branch=master)
+
 # OPC Connector
 The purpose of this project is to provide connectivity to machines (broadly speaking) via the OPC standard. The initial OPC standard was restricted to the Windows platform (OLE for Process Control), but since has evolved to support an more universal approach (OPC UA - Unified Architecture)
 
