@@ -505,6 +505,7 @@ public class OpcDaClient {
 	// Main
 	// /////////////////////////////////////////////////
 
+	/*
 	public static void main(final String[] args) throws Exception {
 
 		if (args.length < 6) {
@@ -548,6 +549,7 @@ public class OpcDaClient {
 		opc.disconnect();
 
 	}
+*/
 
 	/*
 	 * public static void main2(String[] args) throws Exception {
