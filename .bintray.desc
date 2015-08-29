@@ -1,17 +1,18 @@
 {
     "package": {
-        "name": "spring-boot",
-        "repo": "opc-connector",
+        "name": "opc-connector",
+        "repo": "generic",
         "subject": "mborges-pivotal"
     },
 
     "version": {
-        "name": "0.5"
+        "name": "head"
     },
 
     "files":
         [
         {"includePattern": "opc/target/(.*\.jar)", "excludePattern": "opc/target/.*\.original", "uploadPattern": "$1"}
+        {"includePattern": "opc-xd/target/(.*\.jar)", "uploadPattern": "$1"}
         ],
     "publish": false
 }
