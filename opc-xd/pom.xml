@@ -3,10 +3,21 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gopivotal.tola</groupId>
 	<artifactId>opc.xd</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 
-	<!-- <parent> <groupId>org.springframework.xd</groupId> <artifactId>spring-xd-module-parent</artifactId> 
-		<version>1.2.0.RELEASE</version> </parent> -->
+	<profiles>
+		<profile>
+			<activation>
+				<property>
+					<name>!env.TRAVIS_JOB_ID</name>
+				</property>
+			</activation>
+			<properties>
+				<env.TRAVIS_JOB_ID>SNAPSHOT</env.TRAVIS_JOB_ID>
+			</properties>
+		</profile>
+
+	</profiles>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,6 +25,7 @@
 	</properties>
 
 	<build>
+		<finalName>${project.artifactId}-${project.version}-${env.TRAVIS_JOB_ID}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -4,11 +4,23 @@
 
 	<groupId>com.gopivotal.tola</groupId>
 	<artifactId>opc</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>opc</name>
 	<url>https://github.com/mborges-pivotal/opc-connector/wiki</url>
+
+	<profiles>
+		<profile>
+			<activation>
+				<property>
+					<name>!env.TRAVIS_JOB_ID</name>
+				</property>
+			</activation>
+			<properties><env.TRAVIS_JOB_ID>SNAPSHOT</env.TRAVIS_JOB_ID></properties>
+		</profile>
+		
+	</profiles>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,10 +31,8 @@
 		<openscada.jinterop.deps.version>1.3.0-SNAPSHOT</openscada.jinterop.deps.version>
 	</properties>
 
-	<!-- <parent> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-parent</artifactId> 
-		<version>1.3.0.M2</version> </parent> -->
-
 	<build>
+		<finalName>${project.artifactId}-${project.version}-${env.TRAVIS_JOB_ID}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
