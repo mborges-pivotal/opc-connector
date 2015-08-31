@@ -4,7 +4,7 @@
 
 	<groupId>com.gopivotal.tola</groupId>
 	<artifactId>opc</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>opc</name>
@@ -17,9 +17,10 @@
 					<name>!env.TRAVIS_JOB_ID</name>
 				</property>
 			</activation>
-			<properties><env.TRAVIS_JOB_ID>SNAPSHOT</env.TRAVIS_JOB_ID></properties>
+			<properties>
+				<env.TRAVIS_JOB_ID>LOCAL</env.TRAVIS_JOB_ID>
+			</properties>
 		</profile>
-		
 	</profiles>
 
 	<properties>
@@ -32,7 +33,6 @@
 	</properties>
 
 	<build>
-		<finalName>${project.artifactId}-${project.version}-${env.TRAVIS_JOB_ID}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -42,6 +42,17 @@
 					<target>1.7</target>
 				</configuration>
 				<version>3.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Travis-Job-Id>${env.TRAVIS_JOB_ID}</Travis-Job-Id>
+						</manifestEntries>
+					</archive>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -57,10 +68,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<!-- <distributionManagement> <repository> <id>bintray-package-opc-connector</id> 
-		<url>https://api.bintray.com/content/mborges-pivotal/generic/opc-connector/head/opc-0.0.1-SNAPSHOT.jar</url> 
-		</repository> </distributionManagement> -->
 
 	<pluginRepositories>
 		<pluginRepository>
