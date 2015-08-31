@@ -1,7 +1,7 @@
 language: java
 script: mvn package -B
 before_deploy: 
-  - echo $TRAVIS_JOB_ID
+  - echo "$TRAVIS_JOB_ID $TRAVIS_BUILD_NUMBER $TRAVIS_BUILD_ID"
 deploy:
   provider: bintray
   file: .bintray.desc

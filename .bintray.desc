@@ -11,8 +11,8 @@
 
     "files":
         [
-        {"includePattern": "opc/target/(.*\.jar)", "excludePattern": "opc/target/.*\.original", "uploadPattern": "$1"},
-        {"includePattern": "opc-xd/target/(.*\.jar)", "uploadPattern": "$1"}
+        {"includePattern": "opc/target/(.*)(\.jar)", "excludePattern": "opc/target/.*\.original", "uploadPattern": "${1}-${TRAVIS_BUILD_NUMBER}.${2}"},
+        {"includePattern": "opc-xd/target/(.*)(\.jar)", "excludePattern": "opc/target/.*\.original", "uploadPattern": "$1.$2"}
         ],
     "publish": false
 }
