@@ -12,7 +12,7 @@
     "files":
         [
         {"includePattern": "opc/target/(.*\.jar)", "excludePattern": "opc/target/.*\.original", "uploadPattern": "$1"},
-        {"includePattern": "opc-xd/target/(.*\.jar)", "excludePattern": "opc/target/.*\.original", "uploadPattern": "$1"}
+        {"includePattern": "opc-xd/target/(.*\.jar)", "excludePattern": "opc-xd/target/.*\.original", "uploadPattern": "$1"}
         ],
     "publish": false
 }

@@ -5,22 +5,29 @@
 	<artifactId>opc-xd</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-    <profiles>
-        <profile>
-            <activation>
-                <property>
-                    <name>!env.TRAVIS_JOB_ID</name>
-                </property>
-            </activation>
-            <properties>
-                <env.TRAVIS_JOB_ID>LOCAL</env.TRAVIS_JOB_ID>
-            </properties>
-        </profile>
-    </profiles>
+
+	<parent>
+		<groupId>org.springframework.xd</groupId>
+		<artifactId>spring-xd-module-parent</artifactId>
+		<version>1.2.1.RELEASE</version>
+	</parent>
+
+	<profiles>
+		<profile>
+			<activation>
+				<property>
+					<name>!env.TRAVIS_JOB_ID</name>
+				</property>
+			</activation>
+			<properties>
+				<env.TRAVIS_JOB_ID>LOCAL</env.TRAVIS_JOB_ID>
+			</properties>
+		</profile>
+	</profiles>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.boot.version>1.2.0.RELEASE</spring.boot.version>
+		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
 	</properties>
 
 	<build>
@@ -33,28 +40,22 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Travis-Job-Id>${env.TRAVIS_JOB_ID}</Travis-Job-Id>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Travis-Job-Id>${env.TRAVIS_JOB_ID}</Travis-Job-Id>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>${spring.boot.version}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
