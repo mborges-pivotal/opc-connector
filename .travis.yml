@@ -1,4 +1,5 @@
 language: java
+jdk: oraclejdk8
 script: mvn package -B
 before_deploy: ./scripts/before_deploy.sh
 deploy:
